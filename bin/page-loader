@@ -1,0 +1,62 @@
+#!/usr/bin/env php
+
+<?php
+
+require 'vendor/autoload.php';
+
+use GuzzleHttp\Client;
+
+// Получение аргументов
+$args = arguments($argv);
+
+// Преобразование имени файла
+$filename = str_replace('https://', '', $args['params'][1]);
+$filename = str_replace('http://', '', $filename);
+$filename = preg_replace('/[^a-z0-9]/i', '-', $filename);
+$filename = $filename . '.html';
+
+// Ссылка на загружаемую страницу
+$url = $args['params'][1];
+$dir = $args['params'][2];
+
+$client = new Client([
+    'timeout'  => 2.0,
+]);
+
+fileWrite($dir, $filename, $client->get($url)->getBody()->getContents());
+//echo $fullfilename = $dir . $filename . "\r\n";
+// Запись в файл
+function fileWrite($dir, $filename, $content)
+{
+    $fullfilename = $dir . $filename;
+    if (!$fp = fopen($fullfilename, 'w'))
+    {
+        echo "Cannot open file ($fullfilename)\r\n";
+        exit;
+    }
+
+    // Write $somecontent to our opened file.
+    if (fwrite($fp, $content) === FALSE)
+    {
+        echo "Cannot write to file ($fullfilename)\r\n";
+        exit;
+    }
+
+    echo "Success! Written to file ($fullfilename)\r\n";
+    fclose($fp);
+}
+
+// Разбора аргументов command line
+function arguments($argv) {
+    $_ARG = array();
+    foreach ($argv as $arg) {
+      if (mb_ereg('--([^=]+)=(.*)',$arg,$reg)) {
+        $_ARG[$reg[1]] = $reg[2];
+    } elseif(mb_ereg('^-([a-zA-Z0-9])',$arg,$reg)) {
+            $_ARG[$reg[1]] = 'true';
+      } else {
+            $_ARG['params'][]=$arg;
+      }
+    }
+  return $_ARG;
+}

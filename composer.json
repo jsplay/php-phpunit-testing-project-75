@@ -1,0 +1,12 @@
+{
+    "name": "hexlet/code",
+    "require": {
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "authors": [
+        {
+            "name": "jsplay",
+            "email": "jsplay@users.noreply.github.com"
+        }
+    ]
+}
